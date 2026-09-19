@@ -7,7 +7,8 @@ import {
   Navigation,
   Sparkles,
   Gauge,
-  Milestone
+  Milestone,
+  ArrowRight
 } from 'lucide-react';
 import { BUSINESS_INFO } from '../utils/helpers';
 
@@ -16,7 +17,7 @@ export default function JourneyRoad({ onSelectDestination }) {
   const pathRef = useRef(null);
   const [pathLength, setPathLength] = useState(1000);
   const [carState, setCarState] = useState({ x: 500, y: 50, angle: 90, speed: 45 });
-  const [activeZone, setActiveZone] = useState('Chennai City Hub (MAA / Central)');
+  const [activeZone, setActiveZone] = useState('Chennai Central & Heritage Gateway');
   const [progressPercent, setProgressPercent] = useState(0);
 
   const { scrollYProgress } = useScroll({
@@ -70,15 +71,17 @@ export default function JourneyRoad({ onSelectDestination }) {
           speed: calculatedSpeed
         });
 
-        // Determine environment zone
-        if (p < 0.25) {
-          setActiveZone('Chennai City Hub (MAA / Central)');
-        } else if (p < 0.55) {
-          setActiveZone('GST & ECR Express Corridors');
-        } else if (p < 0.85) {
-          setActiveZone('District Corridors (Kanchi / Vellore / Pondy)');
+        // Determine active Chennai landmark zone based on progress
+        if (p < 0.20) {
+          setActiveZone('Chennai Central & Heritage Gateway');
+        } else if (p < 0.40) {
+          setActiveZone('Marina Beach & Napier Bridge Promenade');
+        } else if (p < 0.60) {
+          setActiveZone('Mylapore Kapaleeshwarar Cultural Belt');
+        } else if (p < 0.80) {
+          setActiveZone('Kathipara Cloverleaf & Airport Corridor');
         } else {
-          setActiveZone('Tamil Nadu State-Wide Travel');
+          setActiveZone('Mahabalipuram Shore Temple & Scenic ECR');
         }
       }
     });
@@ -86,39 +89,82 @@ export default function JourneyRoad({ onSelectDestination }) {
     return () => unsubscribe();
   }, [smoothProgress, pathLength]);
 
-  // Road SVG Waypoints and Milestone checkpoints
-  const milestones = [
+  // Chennai Attractive Landmarks along the winding path
+  const landmarks = [
     {
       progress: 0.08,
-      title: 'Departure: Chennai Hub',
-      subtitle: 'Doorstep pickup from anywhere in Chennai',
-      badge: 'Origin',
-      y: 200,
-      align: 'left'
+      title: 'Chennai Central & Heritage Gateway',
+      subtitle: 'Puratchi Thalaivar Dr. M.G.R Station & Ripon Building',
+      badge: 'City Center Hub',
+      stoneMarker: '0 KM • CENTRAL',
+      roadCode: 'NH-32 / SH-1',
+      distance: 'City Gateway',
+      image: '/chennai/chennai_hero_bg.jpg',
+      desc: '150-year-old terracotta Indo-Saracenic gateway & majestic clock tower connecting Chennai to all of India.',
+      y: 190,
+      align: 'left',
+      pinX: 420,
+      pinY: 180
     },
     {
-      progress: 0.32,
-      title: 'ECR & GST Toll Expressway',
-      subtitle: 'FastTag express transit with scenic corridors',
-      badge: 'Highway Transition',
-      y: 720,
-      align: 'right'
+      progress: 0.28,
+      title: 'Marina Beach & Light House',
+      subtitle: 'Scenic Coastal Promenade & Napier Bridge',
+      badge: 'Coastal Wonder',
+      stoneMarker: '6 KM • MARINA',
+      roadCode: 'KAMARAJAR SALAI',
+      distance: '6 km • Bay of Bengal',
+      image: '/chennai/chennai_marina.jpg',
+      desc: "World's 2nd longest natural urban beach with red-and-white lighthouse, morning sea breeze, and illuminated Napier Bridge.",
+      y: 620,
+      align: 'right',
+      pinX: 280,
+      pinY: 610
     },
     {
-      progress: 0.58,
-      title: 'Heritage & District Corridors',
-      subtitle: 'Kanchipuram, Vellore, Chengalpattu routes',
-      badge: 'District Crossways',
-      y: 1300,
-      align: 'left'
+      progress: 0.48,
+      title: 'Kapaleeshwarar Temple, Mylapore',
+      subtitle: 'Sacred 7th-Century Dravidian Architecture',
+      badge: 'Cultural Soul',
+      stoneMarker: '11 KM • MYLAPORE',
+      roadCode: 'MYLAPORE TANK',
+      distance: '11 km • Spiritual Heart',
+      image: '/chennai/chennai_kapaleeshwarar.jpg',
+      desc: 'Towering sculpted Dravidian gopuram, sacred temple tank, and centuries of vibrant classical Tamil culture and traditions.',
+      y: 1060,
+      align: 'left',
+      pinX: 720,
+      pinY: 1050
     },
     {
-      progress: 0.88,
-      title: 'Spiritual & Coastal Horizons',
-      subtitle: 'Pondicherry, Tiruvannamalai & beyond',
-      badge: 'Destinations',
-      y: 1900,
-      align: 'right'
+      progress: 0.70,
+      title: 'Kathipara Cloverleaf & Airport Corridor',
+      subtitle: 'Asia’s Largest Cloverleaf Flyover & GST Highway',
+      badge: 'Express Corridor',
+      stoneMarker: '16 KM • KATHIPARA',
+      roadCode: 'GST ROAD / NH-45',
+      distance: '16 km • Airport Link',
+      image: '/chennai/chennai_kathipara.jpg',
+      desc: 'Grand multi-level highway interchange connecting OMR tech corridor, Chennai International Airport, and southern expressways.',
+      y: 1530,
+      align: 'right',
+      pinX: 350,
+      pinY: 1520
+    },
+    {
+      progress: 0.90,
+      title: 'Mahabalipuram Shore Temple & ECR',
+      subtitle: 'UNESCO World Heritage Bay Coastal Cruise',
+      badge: 'UNESCO Wonder',
+      stoneMarker: '55 KM • SHORE TEMPLE',
+      roadCode: 'ECR / SH-49',
+      distance: '55 km • Coastal Highway',
+      image: '/destinations/mahabalipuram.jpg',
+      desc: 'Picturesque East Coast Road cruise leading to 8th-century monolithic rock-cut temples kissed by Bay of Bengal waves.',
+      y: 1980,
+      align: 'left',
+      pinX: 340,
+      pinY: 1970
     }
   ];
 
@@ -126,39 +172,41 @@ export default function JourneyRoad({ onSelectDestination }) {
     <section
       id="journey"
       ref={containerRef}
-      className="relative py-16 sm:py-24 bg-gradient-to-b from-slate-50 via-sky-50/40 to-slate-100 overflow-hidden"
+      className="relative py-16 sm:py-24 bg-gradient-to-b from-slate-950 via-[#0a1224] to-slate-950 text-white overflow-hidden"
     >
       {/* Background ambient lighting */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none"></div>
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-2/3 -right-32 w-96 h-96 bg-brand-500/10 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-100/70 border border-brand-200 text-brand-700 text-xs font-bold uppercase tracking-wider mb-3">
-            <Compass className="w-4 h-4 text-brand-600 animate-spin" style={{ animationDuration: '8s' }} />
-            <span>Interactive Road Journey</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-amber-400/40 text-amber-300 text-xs font-bold uppercase tracking-wider mb-3 shadow-lg backdrop-blur-md">
+            <Compass className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '8s' }} />
+            <span>Interactive Chennai Scenic Route</span>
           </div>
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-display tracking-tight">
-            YOUR JOURNEY STARTS HERE
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white font-display tracking-tight">
+            CRUISING THROUGH CHENNAI
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-600">
-            Scroll down to ride along our scenic travel corridors from Chennai to surrounding districts across Tamil Nadu.
+          <p className="mt-3 text-sm sm:text-base text-slate-300">
+            Scroll down to ride along Chennai's most iconic attractive landmarks, scenic beach corridors, and heritage sites with Sri Venkateswara Travels.
           </p>
         </div>
 
         {/* Floating Journey HUD */}
         <div className="sticky top-16 sm:top-20 z-30 mb-8 max-w-2xl mx-auto px-2">
-          <div className="glass-panel p-3 sm:p-4 rounded-2xl shadow-premium border border-slate-200/90 flex items-center justify-between gap-3">
+          <div className="glass-panel-dark p-3 sm:p-4 rounded-2xl shadow-2xl border border-white/15 backdrop-blur-xl flex items-center justify-between gap-3">
             
             {/* Current Zone */}
             <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
                 <Navigation className="w-4 h-4 animate-pulse" />
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] sm:text-[10px] font-bold tracking-wider text-slate-400 uppercase">Live Route Status</p>
-                <p className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                <p className="text-[9px] sm:text-[10px] font-bold tracking-wider text-amber-400 uppercase">Live Route Location</p>
+                <p className="text-xs sm:text-sm font-extrabold text-white truncate">
                   {activeZone}
                 </p>
               </div>
@@ -166,22 +214,22 @@ export default function JourneyRoad({ onSelectDestination }) {
 
             {/* Live Speedometer & Progress */}
             <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-              <div className="hidden md:flex items-center gap-2 text-slate-700">
-                <Gauge className="w-4 h-4 text-brand-600" />
+              <div className="hidden md:flex items-center gap-2 text-slate-300">
+                <Gauge className="w-4 h-4 text-amber-400" />
                 <div className="text-right">
                   <p className="text-[9px] text-slate-400 font-bold uppercase">Speed</p>
-                  <p className="text-xs font-bold text-slate-800">{Math.max(35, carState.speed)} km/h</p>
+                  <p className="text-xs font-bold text-white">{Math.max(35, carState.speed)} km/h</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <div className="text-right">
                   <p className="text-[9px] text-slate-400 font-bold uppercase">Progress</p>
-                  <p className="text-xs sm:text-sm font-black text-brand-600">{progressPercent}%</p>
+                  <p className="text-xs sm:text-sm font-black text-amber-400">{progressPercent}%</p>
                 </div>
-                <div className="w-12 sm:w-16 h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div className="w-12 sm:w-16 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
                   <div
-                    className="h-full bg-gradient-to-r from-brand-600 to-sky-500 rounded-full transition-all duration-150"
+                    className="h-full bg-gradient-to-r from-brand-500 via-amber-400 to-emerald-400 rounded-full transition-all duration-150"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -192,7 +240,7 @@ export default function JourneyRoad({ onSelectDestination }) {
         </div>
 
         {/* Winding Highway SVG Stage */}
-        <div className="relative w-full h-[2200px] max-w-4xl mx-auto select-none">
+        <div className="relative w-full h-[2280px] max-w-4xl mx-auto select-none">
           
           <svg
             viewBox="0 0 1000 2200"
@@ -201,13 +249,13 @@ export default function JourneyRoad({ onSelectDestination }) {
           >
             <defs>
               <linearGradient id="asphaltGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#1e293b" />
-                <stop offset="50%" stopColor="#334155" />
-                <stop offset="100%" stopColor="#1e293b" />
+                <stop offset="0%" stopColor="#0f172a" />
+                <stop offset="50%" stopColor="#1e293b" />
+                <stop offset="100%" stopColor="#0f172a" />
               </linearGradient>
 
               <filter id="roadShadow" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="0" dy="10" stdDeviation="15" floodColor="#0f172a" floodOpacity="0.18" />
+                <feDropShadow dx="0" dy="10" stdDeviation="15" floodColor="#020617" floodOpacity="0.4" />
               </filter>
             </defs>
 
@@ -219,7 +267,7 @@ export default function JourneyRoad({ onSelectDestination }) {
                  C 800 1450, 250 1550, 250 1800 
                  C 250 2050, 500 2100, 500 2200"
               fill="none"
-              stroke="#cbd5e1"
+              stroke="#334155"
               strokeWidth="90"
               strokeLinecap="round"
               filter="url(#roadShadow)"
@@ -254,6 +302,15 @@ export default function JourneyRoad({ onSelectDestination }) {
               strokeLinecap="round"
               className="road-dash-moving"
             />
+
+            {/* Attractive Landmark Waypoint Markers along the road path */}
+            {landmarks.map((lm, idx) => (
+              <g key={`pin-${idx}`} transform={`translate(${lm.pinX}, ${lm.pinY})`}>
+                <circle cx="0" cy="0" r="14" fill="#f59e0b" opacity="0.2" className="animate-ping" />
+                <circle cx="0" cy="0" r="8" fill="#0f172a" stroke="#fbbf24" strokeWidth="2.5" />
+                <circle cx="0" cy="0" r="3.5" fill="#fef08a" />
+              </g>
+            ))}
 
             {/* Animated Car Node */}
             <g
@@ -329,36 +386,70 @@ export default function JourneyRoad({ onSelectDestination }) {
             </g>
           </svg>
 
-          {/* Roadside Milestone Cards */}
-          {milestones.map((ms, index) => (
+          {/* Roadside Chennai Landmark Milestone Cards */}
+          {landmarks.map((lm, index) => (
             <div
               key={index}
               style={{
-                top: `${(ms.y / 2200) * 100}%`,
-                left: ms.align === 'left' ? '2%' : 'auto',
-                right: ms.align === 'right' ? '2%' : 'auto',
+                top: `${(lm.y / 2200) * 100}%`,
+                left: lm.align === 'left' ? '2%' : 'auto',
+                right: lm.align === 'right' ? '2%' : 'auto',
               }}
-              className="absolute z-20 w-[240px] sm:w-[280px] transform -translate-y-1/2"
+              className="absolute z-20 w-[270px] sm:w-[320px] transform -translate-y-1/2"
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: false, margin: '-40px' }}
                 transition={{ duration: 0.4 }}
-                className="glass-panel p-3.5 sm:p-4 rounded-2xl shadow-premium hover:shadow-premium-hover border border-slate-200/90 transition-all hover:scale-[1.02] group"
+                className="glass-panel-dark p-3.5 sm:p-4 rounded-2xl shadow-2xl border border-white/20 transition-all hover:scale-[1.02] hover:border-amber-400/60 group"
               >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider border border-brand-100">
-                    {ms.badge}
+                {/* Milestone Stone Header Pill */}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="inline-flex items-center rounded-lg overflow-hidden border border-amber-400/50 shadow-xs">
+                    <span className="bg-amber-400 text-slate-950 font-black text-[9px] px-2 py-0.5 uppercase tracking-wide">
+                      {lm.roadCode}
+                    </span>
+                    <span className="bg-slate-900 text-amber-300 font-bold text-[9px] px-2 py-0.5">
+                      {lm.stoneMarker}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400">
+                    {lm.distance}
                   </span>
-                  <Milestone className="w-3.5 h-3.5 text-brand-600" />
                 </div>
-                <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 group-hover:text-brand-600 transition-colors">
-                  {ms.title}
+
+                {/* Real Landmark Photo Preview */}
+                <div className="relative h-28 sm:h-32 w-full rounded-xl overflow-hidden mb-2.5 bg-slate-950 border border-white/10">
+                  <img
+                    src={lm.image}
+                    alt={lm.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent"></div>
+                  
+                  <span className="absolute bottom-1.5 left-2 px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-[10px] font-bold text-amber-300 border border-amber-400/30">
+                    {lm.badge}
+                  </span>
+                </div>
+
+                {/* Content */}
+                <h3 className="text-xs sm:text-sm font-extrabold text-white group-hover:text-amber-300 transition-colors leading-snug">
+                  {lm.title}
                 </h3>
-                <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5 leading-relaxed">
-                  {ms.subtitle}
+                <p className="text-[11px] text-slate-400 mt-1 leading-relaxed line-clamp-2">
+                  {lm.desc}
                 </p>
+
+                {/* Interactive Action: Book ride to this Chennai attraction */}
+                <button
+                  onClick={() => onSelectDestination && onSelectDestination({ name: lm.title, category: 'Chennai Landmark Tour' })}
+                  className="mt-3 pt-2 border-t border-white/10 w-full flex items-center justify-between text-[11px] font-bold text-amber-400 group-hover:text-amber-300 transition-colors cursor-pointer"
+                >
+                  <span>Plan Ride Here</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </button>
               </motion.div>
             </div>
           ))}

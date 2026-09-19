@@ -80,7 +80,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-brand-500 selection:text-white relative">
+    <div className="min-h-screen bg-[#faf7f2] text-slate-900 selection:bg-amber-500 selection:text-slate-950 relative">
       {/* 1. Initial Loading Experience */}
       {loading && <LoadingScreen onFinish={() => setLoading(false)} />}
 
